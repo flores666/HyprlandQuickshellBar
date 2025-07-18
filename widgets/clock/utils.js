@@ -1,28 +1,37 @@
-function formatDateTime(rawText) {
-	var raw = rawText.trim()
-	var parts = raw.split(" ")
+function formatDateTime(input) {
+	const monthNames = {
+		'янв': 0, 'фев': 1, 'мар': 2, 'апр': 3, 'май': 4, 'июн': 5,
+		'июл': 6, 'авг': 7, 'сен': 8, 'окт': 9, 'ноя': 10, 'дек': 11,
+		'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+		'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+	};
 
-	if (parts.length < 5)
-		return rawText // если что-то не так, вернём как есть
+	const dayNames = {
+		'ru': ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+		'en': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+	};
 
-	var time = parts[4].slice(0, 5)
-	var day = parts[1]
-	var monthStr = parts[2]
-	var weekdayShort = parts[0]
+	const parts = input.split(' ');
+	const [shortDay, dayStr, monthStr, yearStr, timeStr] = parts;
 
-	var monthMap = {
-		"янв": "01", "фев": "02", "мар": "03", "апр": "04",
-		"май": "05", "июн": "06", "июл": "07", "авг": "08",
-		"сен": "09", "окт": "10", "ноя": "11", "дек": "12"
-	}
+	const day = parseInt(dayStr, 10);
+	const year = parseInt(yearStr, 10);
+	const [hours, minutes] = timeStr.split(':').map(Number);
+	const month = monthNames[monthStr];
 
-	var weekdayMap = {
-		"Пн": "Понедельник", "Вт": "Вторник", "Ср": "Среда",
-		"Чт": "Четверг", "Пт": "Пятница", "Сб": "Суббота", "Вс": "Воскресенье"
-	}
+	if (month === undefined) throw new Error('Неизвестный месяц: ' + monthStr);
 
-	var month = monthMap[monthStr] || monthStr
-	var weekday = weekdayMap[weekdayShort] || weekdayShort
+	const date = new Date(Date.UTC(year, month, day, hours, minutes));
 
-	return time + " " + weekday + " " + day + "." + month
+	// Определяем язык
+	const isRu = /^[а-яё]+$/i.test(monthStr);
+	const locale = isRu ? 'ru' : 'en';
+
+	const dayOfWeek = date.getUTCDay(); // 0-6
+	const dayName = dayNames[locale][dayOfWeek];
+
+	const dayPadded = String(day).padStart(2, '0');
+	const monthPadded = String(month + 1).padStart(2, '0');
+
+	return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${dayName} ${dayPadded}.${monthPadded}`;
 }

@@ -36,40 +36,40 @@ Variants {
 			Rectangle {
 				id: center
 				color: Globals.mainColor
+				height: parent.height
 				anchors { 
-					right: right.right
+					right: right.left
 					left: left.right
 					top: parent.top
 				}
 
-				height: parent.height
-				CpuLoadWidget {
-					id: cpuLoadWidget
-					width: 50
-					anchors {
-						left: parent.left
-						verticalCenter: parent.verticalCenter
+				Rectangle {
+					anchors.centerIn: center 
+					height: parent.height
+
+					CpuLoadWidget {
+						id: cpuLoadWidget
+						width: 45
+						height: parent.height
+						anchors.verticalCenter: parent.verticalCenter
+						anchors.right: workspaces.left
+					}
+
+					WorkspacesWidget {
+						id: workspaces
+						width: 244
+						height: parent.height
+						anchors.horizontalCenter: parent.horizontalCenter
+					}
+
+					ClockWidget {
+						id: clockWidget
+						width: 140
+						height: parent.height
+						anchors.verticalCenter: parent.verticalCenter
+						anchors.left: workspaces.right
 					}
 				}
-
-				WorkspacesWidget {
-					id: workspaces
-					width: 300
-					anchors {
-						left: cpuLoadWidget.right
-						verticalCenter: parent.verticalCenter
-					}
-				}
-
-				ClockWidget {
-					id: clockWidget
-					width: 100
-					anchors {
-						left: workspaces.right
-						verticalCenter: parent.verticalCenter
-					}
-				}
-
 			}
 
 			Rectangle {

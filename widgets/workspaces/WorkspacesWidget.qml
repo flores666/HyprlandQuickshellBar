@@ -25,7 +25,6 @@ Rectangle {
 				height: root.height
 				color: "transparent"
 
-				// Найдём текущий workspace по ID
 				property bool isActive: Hyprland.focusedWorkspace.id == modelData
 
 				Rectangle {

@@ -49,7 +49,7 @@ Variants {
 
 					CpuLoadWidget {
 						id: cpuLoadWidget
-						width: 45
+						width: 54
 						height: parent.height
 						anchors.verticalCenter: parent.verticalCenter
 						anchors.right: workspaces.left

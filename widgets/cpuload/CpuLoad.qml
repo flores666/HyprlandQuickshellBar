@@ -14,7 +14,7 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
-				cpuLoad.currentLoad = parseFloat(this.text.trim()) + "%"
+				cpuLoad.currentLoad = parseFloat(this.text.trim())
             }
         }
     }

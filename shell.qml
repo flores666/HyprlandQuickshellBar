@@ -4,6 +4,7 @@ import "widgets/clock"
 import "widgets/cpuload"
 import "widgets/workspaces"
 import "widgets/brightness"
+import "widgets/volume"
 import "globals"
 
 Variants {
@@ -87,6 +88,11 @@ Variants {
 
 				width: Screen.width * Globals.widthCoef
 				height: parent.height
+
+				VolumeWidget {
+					width: 20
+					anchors.right: right.right
+				}
 			}
 		}
 	}

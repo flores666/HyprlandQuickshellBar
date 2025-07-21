@@ -17,7 +17,9 @@ Rectangle {
 		height: 21
 		anchors.centerIn: parent
 	}
+
 	property int currentVolume: 0
+	property bool isMuted: false
 
 	Process {
 		id: getCurrentVolume
@@ -43,6 +45,25 @@ Rectangle {
 		running: false
 	}
 
+	Process {
+		id: muteAudio
+		command: ["pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle"]
+		running: false
+	}
+
+	function resolveImageSource() : void {
+		var offSorce = Qt.resolvedUrl("icons/volume_off.svg");
+		var downSorce = Qt.resolvedUrl("icons/volume_down.svg");
+		var upSorce = Qt.resolvedUrl("icons/volume.svg");
+
+		if (volumeWidget.isMuted) image.source = offSorce;
+		else {
+			if (volumeWidget.currentVolume < 50) image.source = downSorce;
+			if (volumeWidget.currentVolume == 0) image.source = offSorce;
+			if (volumeWidget.currentVolume > 50) image.source = upSorce;
+		}
+	}
+
 	MouseArea {
 		anchors.fill: parent
 		cursorShape: Qt.PointingHandCursor
@@ -53,10 +74,20 @@ Rectangle {
 		 onExited: {
 			 image.visible = false
 		 }*/
-		 onWheel: event => {
-			 var up = event.angleDelta.y > 0;
-			 if (up && volumeWidget.currentVolume < 100) volumePlusProccess.running = true
-			 if (!up && volumeWidget.currentVolume >= 0) volumeMinusProccess.running = true;
-			 getCurrentVolume.running = true;
+		 onClicked: event => {
+			 isMuted = !isMuted;
+			 muteAudio.running = true;
+			 resolveImageSource();
 		 }
-	 }}
+		 onWheel: event => {
+			 if (!isMuted) {
+				 var up = event.angleDelta.y > 0;
+				 if (up && volumeWidget.currentVolume < 100) volumePlusProccess.running = true
+				 if (!up && volumeWidget.currentVolume >= 0) volumeMinusProccess.running = true;
+				 getCurrentVolume.running = true;
+				 resolveImageSource();
+			 }
+		 }
+	 }
+ }
+

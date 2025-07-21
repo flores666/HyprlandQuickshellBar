@@ -3,6 +3,7 @@ import QtQuick
 import "widgets/clock"
 import "widgets/cpuload"
 import "widgets/workspaces"
+import "widgets/brightness"
 import "globals"
 
 Variants {
@@ -31,6 +32,10 @@ Variants {
 
 				width: Screen.width * Globals.widthCoef
 				height: parent.height
+
+				BrightnessWidget {
+					width: 20
+				}
 			}
 
 			Rectangle {
@@ -57,7 +62,7 @@ Variants {
 
 					WorkspacesWidget {
 						id: workspaces
-						width: 244
+						width: 255
 						height: parent.height
 						anchors.horizontalCenter: parent.horizontalCenter
 					}

@@ -2,13 +2,14 @@ import QtQuick
 import Quickshell
 import Quickshell.Widgets
 import "../../globals"
-import Quickshell.Io
+import Quickshell.Services.Pipewire
 
 Rectangle {
 	id: volumeWidget
 	height: parent.height
 	width: parent.width * 0.1
 	color: Globals.mainColor
+
 	IconImage {
 		id: image
 		//visible: false
@@ -18,49 +19,40 @@ Rectangle {
 		anchors.centerIn: parent
 	}
 
-	property int currentVolume: 0
-	property bool isMuted: false
+	property bool ready: Pipewire.defaultAudioSink?.ready ?? false
+	property PwNode sink: Pipewire.defaultAudioSink
+	property PwNode source: Pipewire.defaultAudioSource
 
-	Process {
-		id: getCurrentVolume
-		command: ["sh", "-c", "pactl get-sink-volume @DEFAULT_SINK@ | grep -oP '\\d+(?=%)' | head -1"]
-		running: true
+	// bounding objects, without this will not work
+	PwObjectTracker {
+		objects: [sink, source]
+	}
 
-		stdout: StdioCollector {
-			onStreamFinished: {
-				currentVolume = parseInt(this.text)
-			}
+	Component.onCompleted: {
+		if (sink.ready && (isNaN(sink.audio.volume) || sink.audio.volume === undefined || sink.audio.volume === null)) {
+			sink.audio.volume = 0;
 		}
 	}
 
-	Process {
-		id: volumePlusProccess 
-		command: ["pactl", "set-sink-volume", "@DEFAULT_SINK@", "+5%"]
-		running: false
+	// just in case
+	function preventWrongAudioValues() : void {
+		let currentVolume = sink.audio.volume;
+		if (currentVolume > 1) sink.audio.volume = 1;
+		if (currentVolume < 0) sink.audio.volume = 0;
 	}
 
-	Process {
-		id: volumeMinusProccess
-		command: ["pactl", "set-sink-volume", "@DEFAULT_SINK@", "-5%"]
-		running: false
-	}
-
-	Process {
-		id: muteAudio
-		command: ["pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle"]
-		running: false
-	}
-
+	// update icon
 	function resolveImageSource() : void {
-		var offSorce = Qt.resolvedUrl("icons/volume_off.svg");
-		var downSorce = Qt.resolvedUrl("icons/volume_down.svg");
-		var upSorce = Qt.resolvedUrl("icons/volume.svg");
+		let offSorce = Qt.resolvedUrl("icons/volume_off.svg");
+		let downSorce = Qt.resolvedUrl("icons/volume_down.svg");
+		let upSorce = Qt.resolvedUrl("icons/volume.svg");
+		let currentVolume = sink.audio.volume;
 
-		if (volumeWidget.isMuted) image.source = offSorce;
+		if (sink.audio.muted) image.source = offSorce;
 		else {
-			if (volumeWidget.currentVolume < 50) image.source = downSorce;
-			if (volumeWidget.currentVolume == 0) image.source = offSorce;
-			if (volumeWidget.currentVolume > 50) image.source = upSorce;
+			if (currentVolume < 0.5) image.source = downSorce;
+			if (currentVolume == 0) image.source = offSorce;
+			if (currentVolume > 0.5) image.source = upSorce;
 		}
 	}
 
@@ -75,16 +67,16 @@ Rectangle {
 			 image.visible = false
 		 }*/
 		 onClicked: event => {
-			 isMuted = !isMuted;
-			 muteAudio.running = true;
+			 sink.audio.muted = !sink.audio.muted;
 			 resolveImageSource();
 		 }
 		 onWheel: event => {
-			 if (!isMuted) {
+			 if (!sink.audio.muted) {
 				 var up = event.angleDelta.y > 0;
-				 if (up && volumeWidget.currentVolume < 100) volumePlusProccess.running = true
-				 if (!up && volumeWidget.currentVolume >= 0) volumeMinusProccess.running = true;
-				 getCurrentVolume.running = true;
+				 if (up && sink.audio.volume < 1) sink.audio.volume += 0.05;
+				 if (!up && sink.audio.volume >= 0) sink.audio.volume -= 0.05;
+
+				 preventWrongAudioValues();
 				 resolveImageSource();
 			 }
 		 }

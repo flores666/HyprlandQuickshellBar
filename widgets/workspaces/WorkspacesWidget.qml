@@ -9,7 +9,7 @@ Rectangle {
 	id: root
 	width: parent.width * 0.5
 	height: parent.height
-	color: Globals.mainColor
+	color: Env.colors.primary
 
 	Row {
 		id: workspacesRow

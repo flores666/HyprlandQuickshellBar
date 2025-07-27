@@ -8,7 +8,7 @@ Rectangle {
 	id: brightnessWidget
 	height: parent.height
 	width: parent.width * 0.1
-	color: Globals.mainColor
+	color: Env.colors.primary
 	IconImage {
 		id: image
 		//visible: false

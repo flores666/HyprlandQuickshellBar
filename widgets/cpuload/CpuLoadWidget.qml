@@ -6,7 +6,7 @@ import Quickshell.Widgets
 Rectangle {
 	width: parent.width * 0.1
 	height: parent.height
-	color: Globals.mainColor
+	color: Env.colors.primary
 
 	Row {
 		spacing: 4

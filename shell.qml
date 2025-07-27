@@ -21,17 +21,17 @@ Variants {
 				right: true
 			}
 
-			implicitHeight: Globals.height
+			implicitHeight: Env.sizes.barHeight;
 
 			Rectangle {
 				id: left
-				color: Globals.mainColor
+				color: Env.colors.primary
 				anchors { 
 					left: parent.left
 					top: parent.top
 				}
 
-				width: Screen.width * Globals.widthCoef
+				width: Screen.width * Env.sizes.barWidthCoef
 				height: parent.height
 
 				BrightnessWidget {
@@ -41,7 +41,7 @@ Variants {
 
 			Rectangle {
 				id: center
-				color: Globals.mainColor
+				color: Env.colors.primary
 				height: parent.height
 				anchors { 
 					right: right.left
@@ -80,13 +80,13 @@ Variants {
 
 			Rectangle {
 				id: right
-				color: Globals.mainColor
+				color: Env.colors.primary
 				anchors { 
 					right: parent.right
 					top: parent.top
 				}
 
-				width: Screen.width * Globals.widthCoef
+				width: Screen.width * Env.sizes.barWidthCoef
 				height: parent.height
 
 				VolumeWidget {

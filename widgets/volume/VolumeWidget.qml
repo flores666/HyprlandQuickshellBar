@@ -8,7 +8,7 @@ Rectangle {
 	id: volumeWidget
 	height: parent.height
 	width: parent.width * 0.1
-	color: Globals.mainColor
+	color: Env.colors.primary
 
 	IconImage {
 		id: image
@@ -26,6 +26,14 @@ Rectangle {
 	// bounding objects, without this will not work
 	PwObjectTracker {
 		objects: [sink, source]
+	}
+
+	Connections {
+		target: sink.audio
+		function onVolumeChanged() {
+			preventWrongAudioValues();
+			resolveImageSource();
+		}
 	}
 
 	Component.onCompleted: {
@@ -72,14 +80,14 @@ Rectangle {
 		 }
 		 onWheel: event => {
 			 if (!sink.audio.muted) {
+				 var step = 0.05;
 				 var up = event.angleDelta.y > 0;
-				 if (up && sink.audio.volume < 1) sink.audio.volume += 0.05;
-				 if (!up && sink.audio.volume >= 0) sink.audio.volume -= 0.05;
-
-				 preventWrongAudioValues();
-				 resolveImageSource();
+				 if (up) sink.audio.volume = Math.min(1, sink.audio.volume + step);
+				 if (!up && sink.audio.volume >= 0) sink.audio.volume = Math.max(0, sink.audio.volume - step);
 			 }
 		 }
 	 }
+
+	 VolumeScrollBar {}
  }
 

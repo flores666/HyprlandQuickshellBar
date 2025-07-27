@@ -5,7 +5,7 @@ import "../../globals"
 Rectangle {
 	width: parent.width * 0.1
 	height: parent.height
-	color: Globals.mainColor
+	color: Env.colors.primary
 
 	Text {
 		id: clock
